@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "axiom-lens-144-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: axiom-lens-144-ryan-vo",
+  "workflows": [
+    "Submit natural-language automation task and observe real-time execution with screenshots",
+    "Connect Android device via ADB or WebUSB bridge and run multi-step UI workflows",
+    "Configure and switch between LLM providers (local Gemma 4 E4B, Ollama, cloud OpenAI/Anthropic/Gemini)"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
