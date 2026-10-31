@@ -3,12 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from '../hooks/useAuth'
 import { Dashboard } from '../pages/Dashboard'
+import { api } from '../api/client'
 
-vi.mock('../api/client', () => ({
-  api: {
-    get: vi.fn(),
-  },
-}))
+vi.mock('../api/client')
 
 const renderDashboard = () => {
   sessionStorage.setItem('axiom_lens_user', JSON.stringify({
@@ -44,9 +41,9 @@ describe('Dashboard', () => {
   })
 
   it('displays stats after loading', async () => {
-    const { api } = await import('../api/client')
-    api.get.mockResolvedValue({ data: [] })
-    api.get.mockResolvedValue({ data: [] })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    vi.mocked(api.get).mockResolvedValueOnce({ data: [] })
+    vi.mocked(api.get).mockResolvedValueOnce({ data: [] })
 
     renderDashboard()
 

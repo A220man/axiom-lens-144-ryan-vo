@@ -5,7 +5,7 @@
     {
       "id": "skeleton",
       "title": "FastAPI/React skeleton with install instructions and tests",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "Backend FastAPI app runs with health endpoint",
         "Frontend React+TypeScript+Vite builds and serves",
@@ -13,8 +13,33 @@
         "Basic pytest and vitest tests pass",
         "README has install/run/test steps"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": [
+        "backend/app/main.py",
+        "backend/app/api/health.py",
+        "backend/app/api/auth.py",
+        "backend/app/api/tasks.py",
+        "backend/app/api/devices.py",
+        "backend/app/core/config.py",
+        "frontend/src/main.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/pages/Dashboard.tsx",
+        "frontend/src/pages/Tasks.tsx",
+        "frontend/src/pages/Devices.tsx",
+        "frontend/src/pages/Login.tsx",
+        "frontend/src/pages/Callback.tsx",
+        "frontend/src/hooks/useAuth.tsx",
+        "frontend/src/api/client.ts",
+        "compose.yaml"
+      ],
+      "tests": [
+        "backend/tests/test_health.py",
+        "backend/tests/test_auth.py",
+        "backend/tests/test_tasks.py",
+        "backend/tests/test_devices.py",
+        "frontend/src/__tests__/App.test.tsx",
+        "frontend/src/__tests__/Dashboard.test.tsx",
+        "frontend/src/__tests__/Tasks.test.tsx"
+      ]
     },
     {
       "id": "auth",

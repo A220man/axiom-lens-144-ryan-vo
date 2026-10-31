@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 import { api } from '../api/client'
+
 
 export function Callback() {
   const [searchParams] = useSearchParams()
@@ -18,8 +18,7 @@ export function Callback() {
       }
 
       try {
-        const res = await api.get(`/api/v1/auth/callback?code=${code}&state=${state}`)
-        const { access_token } = res.data
+        await api.get(`/api/v1/auth/callback?code=${code}&state=${state}`)
 
         // In a real app, decode JWT and get user info
         const user = {
