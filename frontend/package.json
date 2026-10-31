@@ -2,7 +2,11 @@
   "name": "axiom-lens-144-ryan-vo",
   "version": "1.0.0",
   "type": "module",
-  "author": "Ryan Vo <ryandtvo@gmail.com>",
+  "author": {
+    "name": "Ryan Vo",
+    "email": "ryandtvo@gmail.com",
+    "url": "https://github.com/A220man"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "vite",

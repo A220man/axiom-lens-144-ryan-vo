@@ -10,7 +10,7 @@ skeleton
 
 ### skeleton — FastAPI/React skeleton with install instructions and tests
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Backend FastAPI app runs with health endpoint
@@ -18,6 +18,10 @@ Acceptance:
 - Docker Compose brings up backend, frontend, Keycloak
 - Basic pytest and vitest tests pass
 - README has install/run/test steps
+
+Implementation: `backend/app/main.py`, `backend/app/api/health.py`, `backend/app/api/auth.py`, `backend/app/api/tasks.py`, `backend/app/api/devices.py`, `backend/app/core/config.py`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/Tasks.tsx`, `frontend/src/pages/Devices.tsx`, `frontend/src/pages/Login.tsx`, `frontend/src/pages/Callback.tsx`, `frontend/src/hooks/useAuth.tsx`, `frontend/src/api/client.ts`, `compose.yaml`
+
+Tests: `backend/tests/test_health.py`, `backend/tests/test_auth.py`, `backend/tests/test_tasks.py`, `backend/tests/test_devices.py`, `frontend/src/__tests__/App.test.tsx`, `frontend/src/__tests__/Dashboard.test.tsx`, `frontend/src/__tests__/Tasks.test.tsx`
 
 ### auth — OIDC Keycloak authentication with SPA PKCE flow
 

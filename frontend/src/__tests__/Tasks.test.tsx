@@ -3,13 +3,9 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from '../hooks/useAuth'
 import { Tasks } from '../pages/Tasks'
+import { api } from '../api/client'
 
-vi.mock('../api/client', () => ({
-  api: {
-    get: vi.fn(),
-    post: vi.fn(),
-  },
-}))
+vi.mock('../api/client')
 
 const renderTasks = () => {
   sessionStorage.setItem('axiom_lens_user', JSON.stringify({
@@ -40,8 +36,7 @@ describe('Tasks', () => {
   })
 
   it('shows empty state when no tasks', async () => {
-    const { api } = await import('../api/client')
-    api.get.mockResolvedValue({ data: [] })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
 
     renderTasks()
 
@@ -51,9 +46,8 @@ describe('Tasks', () => {
   })
 
   it('allows submitting a new task', async () => {
-    const { api } = await import('../api/client')
-    api.get.mockResolvedValue({ data: [] })
-    api.post.mockResolvedValue({})
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    vi.mocked(api.post).mockResolvedValue({})
 
     renderTasks()
 

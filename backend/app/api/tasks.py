@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 
 router = APIRouter()
@@ -32,7 +32,7 @@ class TaskResponse(BaseModel):
 @router.post("", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(task: TaskCreate):
     task_id = str(uuid.uuid4())
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     task_data = {
         "id": task_id,
         "goal": task.goal,
