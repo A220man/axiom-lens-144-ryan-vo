@@ -6,6 +6,8 @@ from typing import Optional
 from datetime import datetime, UTC
 import uuid
 
+from app.api.auth import get_current_user, TokenData
+
 router = APIRouter()
 
 # In-memory store (production: use database)
@@ -28,9 +30,8 @@ class TaskResponse(BaseModel):
     updated_at: datetime
     result: Optional[dict] = None
 
-
 @router.post("", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
-async def create_task(task: TaskCreate):
+async def create_task(task: TaskCreate, current_user: TokenData = Depends(get_current_user)):
     task_id = str(uuid.uuid4())
     now = datetime.now(UTC)
     task_data = {
@@ -42,20 +43,24 @@ async def create_task(task: TaskCreate):
         "created_at": now,
         "updated_at": now,
         "result": None,
+        "owner_id": current_user.sub,
     }
     _tasks[task_id] = task_data
     return TaskResponse(**task_data)
 
 
 @router.get("/{task_id}", response_model=TaskResponse)
-async def get_task(task_id: str):
+async def get_task(task_id: str, current_user: TokenData = Depends(get_current_user)):
     if task_id not in _tasks:
         raise HTTPException(status_code=404, detail="Task not found")
-    return TaskResponse(**_tasks[task_id])
+    task = _tasks[task_id]
+    if task.get("owner_id") != current_user.sub:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return TaskResponse(**task)
 
 
 @router.get("", response_model=list[TaskResponse])
-async def list_tasks(limit: int = 50, offset: int = 0):
-    tasks = list(_tasks.values())
+async def list_tasks(limit: int = 50, offset: int = 0, current_user: TokenData = Depends(get_current_user)):
+    tasks = [t for t in _tasks.values() if t.get("owner_id") == current_user.sub]
     tasks.sort(key=lambda t: t["created_at"], reverse=True)
     return [TaskResponse(**t) for t in tasks[offset:offset + limit]]

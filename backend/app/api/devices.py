@@ -1,8 +1,10 @@
 """Device management endpoints."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+
+from app.api.auth import get_current_user, TokenData
 
 router = APIRouter()
 
@@ -17,21 +19,20 @@ class DeviceResponse(BaseModel):
     status: str
     properties: dict
 
-
 @router.get("", response_model=list[DeviceResponse])
-async def list_devices():
+async def list_devices(current_user: TokenData = Depends(get_current_user)):
     return [DeviceResponse(**d) for d in _devices.values()]
 
 
 @router.get("/{device_id}", response_model=DeviceResponse)
-async def get_device(device_id: str):
+async def get_device(device_id: str, current_user: TokenData = Depends(get_current_user)):
     if device_id not in _devices:
         raise HTTPException(status_code=404, detail="Device not found")
     return DeviceResponse(**_devices[device_id])
 
 
 @router.post("/{device_id}/connect")
-async def connect_device(device_id: str):
+async def connect_device(device_id: str, current_user: TokenData = Depends(get_current_user)):
     # Mock connection
     if device_id not in _devices:
         _devices[device_id] = {
@@ -46,7 +47,7 @@ async def connect_device(device_id: str):
 
 
 @router.post("/{device_id}/disconnect")
-async def disconnect_device(device_id: str):
+async def disconnect_device(device_id: str, current_user: TokenData = Depends(get_current_user)):
     if device_id not in _devices:
         raise HTTPException(status_code=404, detail="Device not found")
     _devices[device_id]["status"] = "disconnected"

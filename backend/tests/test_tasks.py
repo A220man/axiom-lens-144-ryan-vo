@@ -1,20 +1,12 @@
 """Task management tests."""
 
 import pytest
-from httpx import AsyncClient, ASGITransport
-from app.main import create_app
-
-
-@pytest.fixture
-async def client():
-    app = create_app()
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        yield ac
+from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_create_task(client: AsyncClient):
-    response = await client.post("/api/v1/tasks", json={"goal": "Open Settings"})
+async def test_create_task(auth_client: AsyncClient):
+    response = await auth_client.post("/api/v1/tasks", json={"goal": "Open Settings"})
     assert response.status_code == 201
     data = response.json()
     assert data["goal"] == "Open Settings"
@@ -23,11 +15,11 @@ async def test_create_task(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_get_task(client: AsyncClient):
-    create_resp = await client.post("/api/v1/tasks", json={"goal": "Test task"})
+async def test_get_task(auth_client: AsyncClient):
+    create_resp = await auth_client.post("/api/v1/tasks", json={"goal": "Test task"})
     task_id = create_resp.json()["id"]
 
-    response = await client.get(f"/api/v1/tasks/{task_id}")
+    response = await auth_client.get(f"/api/v1/tasks/{task_id}")
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == task_id
@@ -35,31 +27,44 @@ async def test_get_task(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_get_nonexistent_task(client: AsyncClient):
-    response = await client.get("/api/v1/tasks/nonexistent-id")
+async def test_get_nonexistent_task(auth_client: AsyncClient):
+    response = await auth_client.get("/api/v1/tasks/nonexistent-id")
     assert response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_list_tasks(client: AsyncClient):
-    await client.post("/api/v1/tasks", json={"goal": "Task 1"})
-    await client.post("/api/v1/tasks", json={"goal": "Task 2"})
+async def test_list_tasks(auth_client: AsyncClient):
+    await auth_client.post("/api/v1/tasks", json={"goal": "Task 1"})
+    await auth_client.post("/api/v1/tasks", json={"goal": "Task 2"})
 
-    response = await client.get("/api/v1/tasks")
+    response = await auth_client.get("/api/v1/tasks")
     assert response.status_code == 200
     data = response.json()
     assert len(data) >= 2
 
 
 @pytest.mark.asyncio
-async def test_task_pagination(client: AsyncClient):
+async def test_task_pagination(auth_client: AsyncClient):
     for i in range(5):
-        await client.post("/api/v1/tasks", json={"goal": f"Task {i}"})
+        await auth_client.post("/api/v1/tasks", json={"goal": f"Task {i}"})
 
-    response = await client.get("/api/v1/tasks?limit=2&offset=0")
+    response = await auth_client.get("/api/v1/tasks?limit=2&offset=0")
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
 
-    response = await client.get("/api/v1/tasks?limit=2&offset=2")
+    response = await auth_client.get("/api/v1/tasks?limit=2&offset=2")
     assert len(response.json()) == 2
+
+
+@pytest.mark.asyncio
+async def test_unauthorized_access(client: AsyncClient):
+    """Test that endpoints require authentication."""
+    response = await client.post("/api/v1/tasks", json={"goal": "Test"})
+    assert response.status_code == 401
+
+    response = await client.get("/api/v1/tasks")
+    assert response.status_code == 401
+
+    response = await client.get("/api/v1/tasks/nonexistent")
+    assert response.status_code == 401

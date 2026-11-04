@@ -16,6 +16,7 @@ export function Tasks() {
   const [loading, setLoading] = useState(true)
   const [goal, setGoal] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchTasks()
@@ -25,8 +26,10 @@ export function Tasks() {
     try {
       const res = await api.get('/api/v1/tasks')
       setTasks(res.data)
-    } catch {
-      // Ignore
+      setError(null)
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } }
+      setError(axiosError.response?.data?.detail || 'Failed to fetch tasks')
     } finally {
       setLoading(false)
     }
@@ -36,12 +39,14 @@ export function Tasks() {
     e.preventDefault()
     if (!goal.trim()) return
     setSubmitting(true)
+    setError(null)
     try {
       await api.post('/api/v1/tasks', { goal: goal.trim() })
       setGoal('')
       fetchTasks()
-    } catch {
-      // Ignore
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } }
+      setError(axiosError.response?.data?.detail || 'Failed to create task')
     } finally {
       setSubmitting(false)
     }
@@ -58,6 +63,11 @@ export function Tasks() {
 
   return (
     <div className="card">
+      {error && (
+        <div className="mb-4 p-3 rounded bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
         <input
           type="text"

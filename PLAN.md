@@ -25,7 +25,7 @@ Tests: `backend/tests/test_health.py`, `backend/tests/test_auth.py`, `backend/te
 
 ### auth — OIDC Keycloak authentication with SPA PKCE flow
 
-Status: planned
+Status: done
 
 Acceptance:
 - Login redirects to Keycloak
@@ -33,6 +33,10 @@ Acceptance:
 - Tokens stored in memory (not localStorage)
 - API endpoints require valid bearer token
 - Logout clears session
+
+Implementation: `backend/app/api/auth.py`, `backend/app/api/tasks.py`, `backend/app/api/devices.py`, `frontend/src/hooks/useAuth.tsx`, `frontend/src/api/client.ts`, `frontend/src/pages/Callback.tsx`, `frontend/src/pages/Login.tsx`
+
+Tests: `backend/tests/test_auth.py`, `backend/tests/test_tasks.py`, `backend/tests/test_devices.py`
 
 ### llm-adapters — Multi-provider LLM adapters (OpenAI-compatible, Anthropic, Gemini, Ollama)
 
