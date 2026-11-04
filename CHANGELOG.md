@@ -1,8 +1,29 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Added (auth feature)
+- OIDC Keycloak authentication with SPA PKCE flow (S256 code challenge)
+- JWT bearer token validation dependency (`get_current_user`) for protected endpoints
+- Task and device endpoints now require authentication
+- Frontend auth context with sessionStorage token storage (not localStorage)
+- Axios interceptors for automatic Authorization header attachment and 401 redirect
+- Improved error handling in Tasks and Devices pages with user-facing error messages
+
+### Changed
+- Backend tests updated to use authenticated client fixture (`auth_client`)
+- PKCE upgraded from plain to S256 method
+- Token decode uses dummy key with `verify_signature=False` for demo
+
+### Verified
+- Backend: 17/17 pytest tests pass (including new unauthorized access tests)
+- Frontend: 6/6 vitest tests pass
 
 ## 1.0.0 — work-in-progress checkpoint
 

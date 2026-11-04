@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { api } from '../api/client'
+import { useAuth } from '../hooks/useAuth'
 
 
 export function Callback() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { handleCallback } = useAuth()
 
   useEffect(() => {
-    async function handleCallback() {
+    async function handleCallbackWrapper() {
       const code = searchParams.get('code')
       const state = searchParams.get('state')
 
@@ -18,23 +19,14 @@ export function Callback() {
       }
 
       try {
-        await api.get(`/api/v1/auth/callback?code=${code}&state=${state}`)
-
-        // In a real app, decode JWT and get user info
-        const user = {
-          id: 'demo-user',
-          name: 'Demo User',
-          email: 'demo@example.com',
-          roles: ['operator'],
-        }
-        sessionStorage.setItem('axiom_lens_user', JSON.stringify(user))
+        await handleCallback(code, state)
         navigate('/')
       } catch {
         navigate('/login')
       }
     }
-    handleCallback()
-  }, [searchParams, navigate])
+    handleCallbackWrapper()
+  }, [searchParams, navigate, handleCallback])
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">

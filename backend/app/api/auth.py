@@ -1,10 +1,13 @@
 """Authentication endpoints (OIDC Keycloak)."""
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import secrets
 import httpx
+from jose import jwt, JWTError
+from typing import Optional
 
 from app.core.config import settings
 
@@ -13,6 +16,9 @@ router = APIRouter()
 # In-memory state store (production: use Redis)
 _oidc_states: dict[str, dict] = {}
 
+# Token verification (simplified - production: use JWKS)
+security = HTTPBearer(auto_error=False)
+
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -20,12 +26,51 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+class TokenData(BaseModel):
+    sub: str
+    preferred_username: Optional[str] = None
+    email: Optional[str] = None
+    realm_access: Optional[dict] = None
+
+
+async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> TokenData:
+    """Validate bearer token and return user info."""
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        # In production, verify against Keycloak JWKS
+        # For now, decode without verification (demo only)
+        payload = jwt.decode(
+            credentials.credentials,
+            "dummy-key",  # Required even with verify_signature=False
+            options={"verify_signature": False, "verify_aud": False},
+            algorithms=["HS256"],
+        )
+        return TokenData(**payload)
+    except JWTError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid token: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 @router.get("/login")
 async def login(request: Request):
     """Initiate OIDC authorization code flow with PKCE."""
     state = secrets.token_urlsafe(32)
     code_verifier = secrets.token_urlsafe(64)
-    code_challenge = code_verifier  # S256 would hash this; simplified for demo
+    # S256 code challenge
+    import hashlib
+    import base64
+    code_challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(code_verifier.encode()).digest()
+    ).decode().rstrip("=")
 
     _oidc_states[state] = {
         "code_verifier": code_verifier,
@@ -40,7 +85,7 @@ async def login(request: Request):
         f"&redirect_uri={_oidc_states[state]['redirect_uri']}"
         f"&state={state}"
         f"&code_challenge={code_challenge}"
-        f"&code_challenge_method=plain"
+    f"&code_challenge_method=S256"
     )
     return RedirectResponse(url=auth_url)
 
@@ -79,3 +124,8 @@ async def callback(code: str, state: str):
 async def logout():
     """Logout endpoint (client clears tokens)."""
     return {"message": "Logged out"}
+
+
+# Export for other routers
+__all__ = ["router", "get_current_user", "TokenData"]
+

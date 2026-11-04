@@ -13,6 +13,7 @@ export function Devices() {
   const [devices, setDevices] = useState<Device[]>([])
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchDevices()
@@ -22,8 +23,10 @@ export function Devices() {
     try {
       const res = await api.get('/api/v1/devices')
       setDevices(res.data)
-    } catch {
-      // Ignore
+      setError(null)
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } }
+      setError(axiosError.response?.data?.detail || 'Failed to fetch devices')
     } finally {
       setLoading(false)
     }
@@ -31,11 +34,13 @@ export function Devices() {
 
   async function handleConnect(id: string) {
     setConnecting(id)
+    setError(null)
     try {
       await api.post(`/api/v1/devices/${id}/connect`)
       fetchDevices()
-    } catch {
-      // Ignore
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } }
+      setError(axiosError.response?.data?.detail || 'Failed to connect device')
     } finally {
       setConnecting(null)
     }
@@ -43,11 +48,13 @@ export function Devices() {
 
   async function handleDisconnect(id: string) {
     setConnecting(id)
+    setError(null)
     try {
       await api.post(`/api/v1/devices/${id}/disconnect`)
       fetchDevices()
-    } catch {
-      // Ignore
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } }
+      setError(axiosError.response?.data?.detail || 'Failed to disconnect device')
     } finally {
       setConnecting(null)
     }
@@ -56,6 +63,12 @@ export function Devices() {
   return (
     <div className="card">
       <h2 className="mb-4">Connected Devices</h2>
+
+      {error && (
+        <div className="mb-4 p-3 rounded bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center text-[var(--color-text-muted)]">Loading devices...</div>
