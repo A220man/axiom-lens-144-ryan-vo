@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-skeleton
+llm-adapters
 
 ## Roadmap
 
@@ -40,13 +40,17 @@ Tests: `backend/tests/test_auth.py`, `backend/tests/test_tasks.py`, `backend/tes
 
 ### llm-adapters — Multi-provider LLM adapters (OpenAI-compatible, Anthropic, Gemini, Ollama)
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Provider resolution from config
 - Structured output via tool calling
 - Bounded timeouts and redacted errors
 - Keys only server-side
+
+Implementation: `backend/app/services/llm_adapters.py`, `backend/app/main.py`
+
+Tests: `backend/tests/test_llm_adapters.py`
 
 ### automation-engine — Core automation engine with device observation and action execution
 
