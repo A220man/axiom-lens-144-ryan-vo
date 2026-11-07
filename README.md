@@ -52,6 +52,22 @@ graph TD
     Device --> ADB[ADB / WebUSB Bridge]
 ```
 
+## LLM Adapters (Implemented)
+
+The backend includes a multi-provider LLM adapter layer with:
+- **Provider resolution**: Automatic selection based on `LLM_PROVIDER` config
+- **Structured output**: Tool/function calling support across all providers
+- **Bounded timeouts**: Configurable request timeouts (default 30s)
+- **Server-side keys**: API keys never exposed to frontend
+
+Supported providers:
+- OpenAI-compatible (OpenAI, vLLM, Ollama, custom endpoints)
+- Anthropic (Claude 3.5 Sonnet)
+- Google Gemini (1.5 Flash/Pro)
+- Ollama (local models)
+
+Configuration via environment variables (see Provider Configuration table above).
+
 ## AI/ML Evaluation
 
 ```bash

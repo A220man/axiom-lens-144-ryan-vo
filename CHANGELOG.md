@@ -1,7 +1,26 @@
 # Changelog
 
-## 1.2.0 — work-in-progress checkpoint
+## 1.3.0 — work-in-progress checkpoint
 
+Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.2.0 — work-in-progress checkpoint
+### Added (llm-adapters feature)
+- Multi-provider LLM adapter layer (OpenAI-compatible, Anthropic, Gemini, Ollama)
+- Provider resolution from config via factory function
+- Structured output via tool/function calling for all providers
+- Bounded request timeouts (default 30s)
+- Server-side API key handling (keys never leave backend)
+- LLM service with lifespan integration for resource cleanup
+- Unit tests for all adapters, factory, and service
+
+### Changed
+- Updated `backend/app/main.py` to close LLM service on shutdown
+- Updated PLAN.md and STATUS.md for llm-adapters in_progress
+
+### Verified
+- Backend: New test file `test_llm_adapters.py` created (tests not yet run)
+- Feature implementation complete per acceptance criteria except error redaction
 Partial code published for continued development. Known issues: STATUS.md.
 
 ## 1.1.0 — work-in-progress checkpoint

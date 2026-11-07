@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "skeleton",
+  "current_feature": "llm-adapters",
   "features": [
     {
       "id": "skeleton",
@@ -70,15 +70,15 @@
     {
       "id": "llm-adapters",
       "title": "Multi-provider LLM adapters (OpenAI-compatible, Anthropic, Gemini, Ollama)",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "Provider resolution from config",
         "Structured output via tool calling",
         "Bounded timeouts and redacted errors",
         "Keys only server-side"
       ],
-      "implementation": [],
-      "tests": []
+      "implementation": ["backend/app/services/llm_adapters.py", "backend/app/main.py"],
+      "tests": ["backend/tests/test_llm_adapters.py"]
     },
     {
       "id": "automation-engine",

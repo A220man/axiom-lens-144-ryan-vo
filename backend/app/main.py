@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api import health, tasks, devices, auth
+from app.services.llm_adapters import llm_service
 
 
 @asynccontextmanager
@@ -13,6 +14,7 @@ async def lifespan(app: FastAPI):
     # Startup
     yield
     # Shutdown
+    await llm_service.close()
 
 
 def create_app() -> FastAPI:
