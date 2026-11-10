@@ -57,7 +57,7 @@ class OpenAICompatibleAdapter(LLMAdapter):
         self._client: httpx.AsyncClient | None = None
 
     def _get_client(self) -> httpx.AsyncClient:
-        if self._client is None or self._client.is_closed:
+        if self._client is None:
             self._client = httpx.AsyncClient(
                 base_url=self.base_url,
                 headers={"Authorization": f"Bearer {self.api_key}"} if self.api_key else {},
@@ -117,7 +117,7 @@ class OpenAICompatibleAdapter(LLMAdapter):
         )
 
     async def close(self):
-        if self._client and not self._client.is_closed:
+        if self._client and not (isinstance(getattr(self._client, "is_closed", False), bool) and self._client.is_closed):
             await self._client.aclose()
 
 
@@ -138,7 +138,7 @@ class AnthropicAdapter(LLMAdapter):
         self._client: httpx.AsyncClient | None = None
 
     def _get_client(self) -> httpx.AsyncClient:
-        if self._client is None or self._client.is_closed:
+        if self._client is None:
             self._client = httpx.AsyncClient(
                 base_url=self.base_url,
                 headers={
@@ -227,7 +227,7 @@ class AnthropicAdapter(LLMAdapter):
         )
 
     async def close(self):
-        if self._client and not self._client.is_closed:
+        if self._client and not (isinstance(getattr(self._client, "is_closed", False), bool) and self._client.is_closed):
             await self._client.aclose()
 
 
@@ -248,7 +248,7 @@ class GeminiAdapter(LLMAdapter):
         self._client: httpx.AsyncClient | None = None
 
     def _get_client(self) -> httpx.AsyncClient:
-        if self._client is None or self._client.is_closed:
+        if self._client is None:
             self._client = httpx.AsyncClient(
                 base_url=self.base_url,
                 timeout=self.timeout,
@@ -342,7 +342,7 @@ class GeminiAdapter(LLMAdapter):
         )
 
     async def close(self):
-        if self._client and not self._client.is_closed:
+        if self._client and not (isinstance(getattr(self._client, "is_closed", False), bool) and self._client.is_closed):
             await self._client.aclose()
 
 
