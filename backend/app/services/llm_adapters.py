@@ -2,12 +2,16 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 import json
 import httpx
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
+
+class LLMAdapterError(Exception):
+    """Generic LLM adapter error with redacted sensitive data."""
+    pass
 
 
 @dataclass
