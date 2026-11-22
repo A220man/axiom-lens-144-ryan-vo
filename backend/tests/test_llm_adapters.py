@@ -299,3 +299,45 @@ class TestLLMService:
 
         mock_adapter.close.assert_called_once()
         assert service._adapter is None
+
+    def test_validate_provider_config_default(self):
+        """Test provider config validation with default settings."""
+        from app.services.llm_adapters import validate_provider_config
+        result = validate_provider_config()
+        assert result["provider"] == "custom"
+        assert result["is_valid"] == True  # default config is valid (has defaults)
+        # custom provider with defaults is considered valid
+
+    def test_validate_provider_config_with_anthropic(self):
+        """Test provider config validation with anthropic provider."""
+        from app.services.llm_adapters import validate_provider_config
+        with patch.object(settings, "llm_provider", "anthropic"):
+            with patch.object(settings, "llm_api_key", "sk-ant-test123"):
+                with patch.object(settings, "llm_model", "claude-3-sonnet"):
+                    result = validate_provider_config()
+                    assert result["provider"] == "anthropic"
+                    assert result["is_valid"] == True
+
+    def test_validate_provider_config_missing_api_key(self):
+        """Test provider config validation missing API key."""
+        from app.services.llm_adapters import validate_provider_config
+        with patch.object(settings, "llm_provider", "anthropic"):
+            # Don't set api_key - should be invalid
+            with patch.object(settings, "llm_model", "claude-3-sonnet"):
+                result = validate_provider_config()
+                assert result["provider"] == "anthropic"
+                assert result["is_valid"] == False
+                assert any("LLM_API_KEY" in w for w in result["warnings"])
+
+    def test_validate_provider_config_missing_model(self):
+        """Test provider config validation missing model."""
+        from app.services.llm_adapters import validate_provider_config
+        with patch.object(settings, "llm_provider", "openai"):
+            with patch.object(settings, "llm_api_key", "sk-test123"):
+                with patch.object(settings, "llm_model", ""):  # Explicitly empty model
+                    # Don't set model - should be invalid
+                    result = validate_provider_config()
+                    assert result["provider"] == "openai"
+                    assert result["is_valid"] == False
+                    assert any("LLM_MODEL" in w for w in result["warnings"])
+

@@ -374,6 +374,49 @@ def create_adapter() -> LLMAdapter:
         raise ValueError(f"Unknown LLM provider: {settings.llm_provider}")
 
 
+def validate_provider_config() -> dict:
+    """Validate that the LLM provider configuration is complete and resolvable.
+    
+    Returns a dict with provider info including:
+    - provider: the resolved provider name
+    - is_valid: whether the configuration is valid
+    - warnings: list of warning messages if any
+    """
+    provider = settings.llm_provider.lower()
+    warnings = []
+    is_valid = True
+    
+    if provider in ("custom", "openai", "ollama", "vllm"):
+        # OpenAI-compatible providers need a base URL
+        if not settings.llm_base_url:
+            warnings.append("LLM_BASE_URL is not set for custom/openai/ollama/vllm provider")
+            is_valid = False
+        if not settings.llm_model:
+            warnings.append("LLM_MODEL is not set for custom/openai/ollama/vllm provider")
+            is_valid = False
+    elif provider == "anthropic":
+        if not settings.llm_api_key:
+            warnings.append("LLM_API_KEY is not set for anthropic provider")
+            is_valid = False
+        if not settings.llm_model:
+            warnings.append("LLM_MODEL is not set for anthropic provider")
+            is_valid = False
+    elif provider == "gemini":
+        if not settings.llm_api_key:
+            warnings.append("LLM_API_KEY is not set for gemini provider")
+            is_valid = False
+        if not settings.llm_model:
+            warnings.append("LLM_MODEL is not set for gemini provider")
+            is_valid = False
+    else:
+        is_valid = False
+        warnings.append(f"Unknown LLM provider: {provider}")
+    
+    return {
+        "provider": provider,
+        "is_valid": is_valid,
+        "warnings": warnings,
+    }
 class LLMService:
     """High-level service for LLM interactions."""
 
