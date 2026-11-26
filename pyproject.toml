@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "axiom-lens-144-ryan-vo"
-version = "1.6.0"
+version = "1.7.0"
 description = "Android automation platform with AI/ML core for natural-language workflow execution"
 readme = "README.md"
 license = {text = "MIT"}
