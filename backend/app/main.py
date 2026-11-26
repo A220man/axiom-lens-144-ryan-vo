@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import health, tasks, devices, auth
+from app.api import health, tasks, devices, auth, llm
 from app.services.llm_adapters import llm_service
 
 
@@ -37,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
     app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
     app.include_router(devices.router, prefix="/api/v1/devices", tags=["devices"])
+    app.include_router(llm.router, prefix="/api/v1/llm", tags=["llm"])
 
     return app
 
